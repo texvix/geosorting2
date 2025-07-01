@@ -42,7 +42,7 @@ export default function Home() {
     setLoading(true);
 
     for (const row of rows) {
-      const address = `${row[0]} ${row[1]}, ${row[2]} ${row[3]}`;
+      const address = `${row[2]} ${row[3]}, ${row[5]} ${row[6]}`;
       try {
         const res = await fetch(`${GEOCODE_API}?api_key=${API_KEY}&text=${encodeURIComponent(address)}&size=1`, { headers });
         const json = await res.json();
@@ -140,7 +140,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {previewData.slice(1, 6).map((row, idx) => (
+              {previewData.slice(1).map((row, idx) => (
                 <tr key={idx}>
                   {row.map((cell, i) => (
                     <td key={i} className="border px-2 py-1">{cell}</td>
