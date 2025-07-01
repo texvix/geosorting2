@@ -2,9 +2,7 @@
 import { useState } from "react";
 import * as XLSX from "xlsx";
 
-const GEOCODE_API = "https://api.openrouteservice.org/geocode/search";
 const OPTIMIZE_API = "https://api.openrouteservice.org/optimization";
-const API_KEY = "5b3ce3597851110001cf6248a3a146d50d7a4eac8b704b122cf4b402";
 
 export default function Home() {
   const [fileName, setFileName] = useState("");
@@ -32,11 +30,6 @@ export default function Home() {
   const geocodeAddresses = async () => {
     if (previewData.length < 2) return;
 
-    const headers = {
-      Authorization: API_KEY,
-      Accept: "application/json"
-    };
-
     const rows = previewData.slice(1);
     const results = [];
     setLoading(true);
@@ -44,7 +37,14 @@ export default function Home() {
     for (const row of rows) {
       const address = `${row[2]} ${row[3]}, ${row[5]} ${row[6]}`;
       try {
-        const res = await fetch(`${GEOCODE_API}?api_key=${API_KEY}&text=${encodeURIComponent(address)}&size=1`, { headers });
+        const res = await fetch("/api/geocode", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ address })
+        });
+
         const json = await res.json();
         if (json.features && json.features.length > 0) {
           const coords = json.features[0].geometry.coordinates;
@@ -53,6 +53,7 @@ export default function Home() {
           results.push([...row, null, null]);
         }
       } catch (err) {
+        console.error("Geocoding Fehler:", err);
         results.push([...row, null, null]);
       }
     }
@@ -83,7 +84,7 @@ export default function Home() {
     };
 
     const headers = {
-      Authorization: API_KEY,
+      Authorization: "5b3ce3597851110001cf6248a3a146d50d7a4eac8b704b122cf4b402",
       Accept: "application/json",
       "Content-Type": "application/json"
     };
